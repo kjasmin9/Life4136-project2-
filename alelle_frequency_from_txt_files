@@ -1,0 +1,38 @@
+#in RStudio
+# initial script by Kavithi Jayasundra
+# modified by Jasmin Kaur
+
+library(ggplot2)
+setwd("C:/Users/jaxk2")
+getwd() #to check
+
+
+#upload files 
+lyrata <- read.table("C:/Users/jaxk2/Downloads/lyrata_272_with_some_hybrids.txt", header = TRUE)
+arenosa <- read.table("C:/Users/jaxk2/Downloads/matched_positions_arenosa.txt", header = TRUE)
+
+#merge the text files 
+merged_data <- merge(lyrata, arenosa, by = c("CHROM", "POS"), all.x = TRUE)
+head(merged_data) #to check 
+
+mean_AF <- rowMeans(merged_data[, c("AF.x", "AF.y")], na.rm = TRUE)
+head(mean_AF) #to check
+
+# Create a data frame with the mean allele frequency
+data <- data.frame(Mean_AF = mean_AF)
+
+# Plot histogram using ggplot2
+ggplot(data, aes(x = Mean_AF)) +
+     geom_histogram(binwidth = 0.05, fill = "skyblue", color = "black") +
+     labs(x = "Mean Allele Frequency", y = "Frequency", title = "Allele Frequency Spectrum: Arenosa + Lyrata") +
+     theme(panel.grid.major = element_blank(),  
+                    panel.grid.minor = element_blank(),  
+                    panel.background = element_rect(fill = "white")) 
+ 
+#option 2 for plot, similar to other populations' spectrum 
+ggplot(data, aes(x = Mean_AF)) +
+  geom_histogram(color = 'black', fill = 'skyblue', bins = 20, breaks = seq(0, 1, by = 0.025)) +
+  labs(x = "Mean Allele Frequency", y = "Frequency", title = "Allele Frequency Spectrum: Arenosa + Lyrata") +
+  theme(panel.grid.major = element_blank(),  
+  panel.grid.minor = element_blank(),  
+  panel.background = element_rect(fill = "white"))
