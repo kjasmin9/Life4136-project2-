@@ -1,0 +1,122 @@
+# code by KAvithi Jayasundra
+# Extract sample names from VCF
+bcftools query -l fully_final_filtered.vcf.gz | \
+    # Extract individual and population names
+    awk -F '-' '{print $0 "\t" $1}' | \
+    # Sort by individual name
+    sort -k1,1 > pops_complete.txt
+
+#obtain poly_freq from: https://github.com/thamala/polySV/blob/main/poly_freq.c
+# The compile the script into an executable file
+gcc poly_freq.c -o poly_freq -lm
+
+# Execute the script
+./poly_freq -vcf fully_final_filtered.vcf -pops pops_complete.txt > info_final.tsv
+
+
+
+#in Rstudio
+#allele frequency 
+#script by Kavithi Jayasundra, modified by Jasmin Kaur
+library(ggplot2)
+setwd("C:/Users/jaxk2")
+getwd()
+
+#read tsv as table 
+df <- read.table(file ='C:/Users/jaxk2/Downloads/info_final.tsv', header = TRUE, sep = '\t')
+head(df)
+
+# Store the allele frequencies of the populations you want to plot in a variable for each variable, this is just one example
+BZD <- df$BZD
+PIZ <- df$PIZ
+VLH <- df$VLH
+LIC <- df$LIC
+MOD <- df$MOD
+KAG <- df$KAG
+BZD <- df$BZD
+OCH <- df$OCH
+FRE <- df$FRE
+ROK <- df$ROK
+HAB <- df$HAB
+KEH <- df$KEH
+
+
+# Plot a histogram of the results
+ggplot(data = df, aes(x = BZD)) +
+  geom_histogram(color = 'black', fill = 'lightpink', bins = 20, breaks = seq(0, 1, by = 0.05)) +  
+  labs(title = "Allele Frequency Spectrum for BZD Population", x = "Allele Frequency", y = "Frequency")+
+  theme(panel.grid.major = element_blank(),  
+        panel.grid.minor = element_blank(),  
+        panel.background = element_rect(fill = "white")) 
+
+ggplot(data = df, aes(x = PIZ)) +
+  geom_histogram(color = 'black', fill = 'lightgreen', bins = 20, breaks = seq(0, 1, by = 0.05)) +
+  labs(title = "Allele Frequency Spectrum for PIZ Population", x = "Allele Frequency", y = "Frequency") +
+  theme(panel.grid.major = element_blank(),  
+        panel.grid.minor = element_blank(),  
+        panel.background = element_rect(fill = "white"))  
+
+
+ggplot(data = df, aes(x = VLH)) +
+  geom_histogram(color = 'black', fill = 'lightgreen', bins = 20, breaks = seq(0, 1, by = 0.05)) +  
+  labs(title = "Allele Frequency Spectrum for VLH Population", x = "Allele Frequency", y = "Frequency")+
+  theme(panel.grid.major = element_blank(),  
+        panel.grid.minor = element_blank(),  
+        panel.background = element_rect(fill = "white")) 
+
+ggplot(data = df, aes(x = LIC)) +
+  geom_histogram(color = 'black', fill = 'lightgreen', bins = 20, breaks = seq(0, 1, by = 0.05)) +  
+  labs(title = "Allele Frequency Spectrum for LIC Population", x = "Allele Frequency", y = "Frequency")+
+  theme(panel.grid.major = element_blank(),  
+        panel.grid.minor = element_blank(),  
+        panel.background = element_rect(fill = "white")) 
+
+
+ggplot(data = df, aes(x = MOD)) +
+  geom_histogram(color = 'black', fill = 'lightgreen', bins = 20, breaks = seq(0, 1, by = 0.05)) +  
+  labs(title = "Allele Frequency Spectrum for MOD Population", x = "Allele Frequency", y = "Frequency")+
+  theme(panel.grid.major = element_blank(),  
+        panel.grid.minor = element_blank(),  
+        panel.background = element_rect(fill = "white")) 
+
+ggplot(data = df, aes(x = KAG)) +
+  geom_histogram(color = 'black', fill = 'lightgreen', bins = 20, breaks = seq(0, 1, by = 0.05)) +  
+  labs(title = "Allele Frequency Spectrum for KAG Population", x = "Allele Frequency", y = "Frequency")+
+  theme(panel.grid.major = element_blank(),  
+        panel.grid.minor = element_blank(),  
+        panel.background = element_rect(fill = "white")) 
+
+ggplot(data = df, aes(x = OCH)) +
+  geom_histogram(color = 'black', fill = 'lightpink', bins = 20, breaks = seq(0, 1, by = 0.05)) +  
+  labs(title = "Allele Frequency Spectrum for OCH Population", x = "Allele Frequency", y = "Frequency")+
+  theme(panel.grid.major = element_blank(),  
+        panel.grid.minor = element_blank(),  
+        panel.background = element_rect(fill = "white")) 
+
+ggplot(data = df, aes(x = FRE)) +
+  geom_histogram(color = 'black', fill = 'lightpink', bins = 20, breaks = seq(0, 1, by = 0.05)) +  
+  labs(title = "Allele Frequency Spectrum for FRE Population", x = "Allele Frequency", y = "Frequency")+
+  theme(panel.grid.major = element_blank(),  
+        panel.grid.minor = element_blank(),  
+        panel.background = element_rect(fill = "white")) 
+
+ggplot(data = df, aes(x = ROK)) +
+  geom_histogram(color = 'black', fill = 'lightpink', bins = 20, breaks = seq(0, 1, by = 0.05)) +  
+  labs(title = "Allele Frequency Spectrum for ROK Population", x = "Allele Frequency", y = "Frequency")+
+  theme(panel.grid.major = element_blank(),  
+        panel.grid.minor = element_blank(),  
+        panel.background = element_rect(fill = "white")) 
+
+ggplot(data = df, aes(x = HAB)) +
+  geom_histogram(color = 'black', fill = 'lightpink', bins = 20, breaks = seq(0, 1, by = 0.05)) +  
+  labs(title = "Allele Frequency Spectrum for HAB Population", x = "Allele Frequency", y = "Frequency")+
+  theme(panel.grid.major = element_blank(),  
+        panel.grid.minor = element_blank(),  
+        panel.background = element_rect(fill = "white")) 
+
+ggplot(data = df, aes(x = KEH)) +
+  geom_histogram(color = 'black', fill = 'lightpink', bins = 20, breaks = seq(0, 1, by = 0.05)) +  
+  labs(title = "Allele Frequency Spectrum for KEH Population", x = "Allele Frequency", y = "Frequency")+
+  theme(panel.grid.major = element_blank(),  
+        panel.grid.minor = element_blank(),  
+        panel.background = element_rect(fill = "white")) 
