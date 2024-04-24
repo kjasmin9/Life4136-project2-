@@ -1,0 +1,9 @@
+# For Splitstree
+
+# obtain vcf_to_phylip.py: https://github.com/edgardomortiz/vcf2phylip/blob/master/vcf2phylip.py
+# Give the document execute permission
+chmod +x vcf_to_phylip.py
+
+# Command for producing a phylip and nexus format output
+./vcf2phylip.py -i fully_final_filtered.vcf.gz -n --output-prefix final_output
+
