@@ -1,0 +1,171 @@
+#gatk command to obtain desired samples into vcf
+conda activate /shared/conda/gatk
+
+gatk SelectVariants \
+-V /workhere/students_2023/Levi_resources/Chrom_1_noSnakemake.lyrata.bipassed.dp.m.bt.1pct.ld_pruned.vcf \
+-sn PIZ-03dl -sn PIZ-06dl -sn PIZ-08dl -sn PIZ-09dl -sn PIZ-11dl -sn PIZ-04dl -sn PIZ-05dl \
+-sn VLH-01dl -sn VLH-02dl -sn VLH-03dl -sn VLH-05dl -sn VLH-06dl -sn VLH-07dl \
+-sn LIC-01tl -sn LIC-02tl -sn LIC-03tl \
+-sn MOD-01tl -sn MOD-02tl -sn MOD-03tl -sn MOD-04tl \
+-sn KAG-01tl -sn KAG-02tl -sn KAG-03tl -sn KAG-04tl -sn KAG-05tl \
+-sn BZD-01tl -sn BZD-02tl -sn BZD-03tl -sn BZD-04tl -sn BZD-05tl -sn BZD-06tl -sn BZD-07tl -sn BZD-08tl \
+-sn OCH-01tl -sn OCH-02tl -sn OCH-03tl -sn OCH-04tl -sn OCH-05tl -sn OCH-06tl -sn OCH-07tl -sn OCH-08tl \
+-sn FRE-01tl -sn FRE-02tl -sn FRE-03tl -sn FRE-04tl -sn FRE-05tl -sn FRE-06tl -sn FRE-07tl -sn FRE-08tl \
+-sn ROK-01tl -sn ROK-02tl \
+-sn HAB-01tl -sn HAB-02tl -sn HAB-03tl \
+-sn KEH-01tl -sn KEH-04tl -sn KEH-05tl -sn KEH-06tl -sn KEH-07tl -sn KEH-08tl -sn KEH-09tl -sn KEH-10tl \
+-O /workhere/students_2023/Levi_resources/group2/1.vcf
+
+#including VLH and PIZ(PEQ from Marburger at al., 2019) diploids, since they cluster together in original pca and are both diploids
+
+re-filter to get rid of outliers according to PCA
+#outliers: KEH.06tl KEH.07tl KEH-08tl KEH.09tl -sn OCH-05tl -sn FRE-06tl FER-05tl FRE-08tl KAG.03tl
+
+gatk SelectVariants \
+-V /workhere/students_2023/Levi_resources/Chrom_1_noSnakemake.lyrata.bipassed.dp.m.bt.1pct.ld_pruned.vcf \
+-sn PIZ-03dl -sn PIZ-06dl -sn PIZ-08dl -sn PIZ-09dl -sn PIZ-11dl -sn PIZ-04dl -sn PIZ-05dl \
+-sn VLH-01dl -sn VLH-02dl -sn VLH-03dl -sn VLH-05dl -sn VLH-06dl -sn VLH-07dl \
+-sn LIC-01tl -sn LIC-02tl -sn LIC-03tl \
+-sn MOD-01tl -sn MOD-02tl -sn MOD-03tl -sn MOD-04tl \
+-sn KAG-01tl -sn KAG-02tl -sn KAG-04tl -sn KAG-05tl \
+-sn BZD-01tl -sn BZD-02tl -sn BZD-03tl -sn BZD-04tl -sn BZD-05tl -sn BZD-06tl -sn BZD-07tl -sn BZD-08tl \
+-sn OCH-01tl -sn OCH-02tl -sn OCH-03tl -sn OCH-04tl -sn OCH-06tl -sn OCH-07tl -sn OCH-08tl \
+-sn FRE-01tl -sn FRE-02tl -sn FRE-03tl -sn FRE-04tl -sn FRE-07tl \
+-sn ROK-01tl -sn ROK-02tl \
+-sn HAB-01tl -sn HAB-02tl -sn HAB-03tl \
+-sn KEH-01tl -sn KEH-04tl -sn KEH-05tl -sn KEH-10tl \
+-O /workhere/students_2023/Levi_resources/group2/2.vcf
+
+
+
+#run  Cochlearia_create_structure_file.py to convert vcf into .str for structure input 
+python3 Cochlearia_create_structure_file.py -v /home/mbxjk6/project3/ultimo/ -o last -s true
+
+#reorder string into desidered order of popualtions/samples
+ grep 'PIZ' last.StructureInputDiploidized.str > last_reordered.str
+ grep 'VLH' last.StructureInputDiploidized.str >> last_reordered.str
+ grep 'LIC' last.StructureInputDiploidized.str >> last_reordered.str
+ grep 'MOD' last.StructureInputDiploidized.str >> last_reordered.str
+ grep 'KAG' last.StructureInputDiploidized.str >> last_reordered.str
+ grep 'BZD' last.StructureInputDiploidized.str >> last_reordered.str
+ grep 'OCH' last.StructureInputDiploidized.str >> last_reordered.str
+ grep 'FRE' last.StructureInputDiploidized.str >> last_reordered.str
+ grep 'ROK' last.StructureInputDiploidized.str >> last_reordered.str
+ grep 'HAB' last.StructureInputDiploidized.str >> last_reordered.str
+ grep 'KEH' last.StructureInputDiploidized.str >> last_reordered.str
+
+#to check the list and order of the samples in the last_reordered.str 
+ grep -o '\b[[:alnum:]]\+-[[:alnum:]]\+' last_reordered.str
+
+#create pop-file form .str; to be used later in distruct.py 
+grep -o '\b[[:alnum:]]\+-[[:alnum:]]\+' last_reordered.str | uniq | awk '{print $0"\t"substr($0, 1, 3)}' > popfile_uniq.txt
+
+
+
+#run faststructure
+
+#structure.py
+#easier to run thorugh a bash job 
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#!/bin/bash
+
+#SBATCH --job-name=structure.py
+#SBATCH --partition=hpc
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --mem=8g
+#SBATCH --time=08:00:00
+#SBATCH --output=/shared/home/mbxjk6/slurm-%x-%j.out      
+#SBATCH --error=/shared/home/mbxjk6/slurm-%x-%j.err
+
+
+
+conda activate /shared/conda/faststructure/
+
+
+# Loop through K values from 1 to 10
+for k in {1..10}; do
+  # Run structure.py with current K value
+  python /shared/conda/faststructure/bin/structure.py -K $k \
+  --input=/workhere/students_2023/Levi_resources/group2/last/vcf_str/last_reordered \
+  --output=/workhere/students_2023/Levi_resources/group2/last/structure_py/last1 \
+  --format=str --full
+done
+
+# Loop through K values from 1 to 10
+for k in {1..10}; do
+  # Run structure.py with current K value
+  python /shared/conda/faststructure/bin/structure.py -K $k \
+  --input=/workhere/students_2023/Levi_resources/group2/last/vcf_str/last_reordered \
+  --output=/workhere/students_2023/Levi_resources/group2/last/structure_py/last2 \
+  --format=str --full
+done
+
+# Loop through K values from 1 to 10
+for k in {1..10}; do
+  # Run structure.py with current K value
+  python /shared/conda/faststructure/bin/structure.py -K $k \
+  --input=/workhere/students_2023/Levi_resources/group2/last/vcf_str/last_reordered \
+  --output=/workhere/students_2023/Levi_resources/group2/last/structure_py/last3 \
+  --format=str --full
+done
+
+# Loop through K values from 1 to 10
+for k in {1..10}; do
+  # Run structure.py with current K value
+  python /shared/conda/faststructure/bin/structure.py -K $k \
+  --input=/workhere/students_2023/Levi_resources/group2/last/vcf_str/last_reordered \
+  --output=/workhere/students_2023/Levi_resources/group2/last/structure_py/last4 \
+  --format=str --full
+done
+
+# Loop through K values from 1 to 10
+for k in {1..10}; do
+  # Run structure.py with current K value
+  python /shared/conda/faststructure/bin/structure.py -K $k \
+  --input=/workhere/students_2023/Levi_resources/group2/last/vcf_str/last_reordered \
+  --output=/workhere/students_2023/Levi_resources/group2/last/structure_py/last5 \
+  --format=str --full
+done
+
+
+conda deactivate
+
+#note: the number after 'last' starts for the number of iterations
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#run ChooseK.py to assess stability 
+conda activate /shared/conda/faststructure/
+
+for k in {1..5}; do
+  python /shared/conda/faststructure/bin/chooseK.py \
+  --input=/workhere/students_2023/Levi_resources/group2/last/structure_py/last$k
+done
+
+python /shared/conda/faststructure/bin/chooseK.py \
+--input=/workhere/students_2023/Levi_resources/group2/last/structure_py/last* #important to have asterisk at end to compare all 5 iterations
+
+
+
+#run distruct.py to get admixture graphs
+conda activate /shared/conda/faststructure/
+export MPLBACKEND=Agg #this solves the bug 
+
+python /shared/conda/faststructure/bin/distruct.py -K 2 \
+--input=/workhere/students_2023/Levi_resources/group2/last/structure_py/last1 \
+--output=/workhere/students_2023/Levi_resources/group2/last/distruct_py/uniq.svg --title="uniq K=2" \
+--popfile=/workhere/students_2023/Levi_resources/group2/last/vcf_str/popfile_uniq.txt
+
+
+
+#get admixture graphs from omicsspeaks.com
+##combine popfile with meanQ		##remove tab separation and convert to csv		
+paste -d '\t' vcf_str/popfile_uniq.txt structure_py/last.2.meanQ > pre_omics2.tsv
+## swap col 1 with 2
+awk '{temp=$1; $1=$2; $2=temp; print}' OFS='\t' pre_omics2.tsv > swapped_pre_omics2.tsv
+##remove tab separation and convert to csv
+cat swapped_pre_omics2.tsv | tr '\t' ',' | tr -s '[:blank:]' ',' > omics_input_last_K2.csv
+
